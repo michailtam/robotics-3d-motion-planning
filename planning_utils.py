@@ -1,6 +1,7 @@
 from enum import Enum
 from queue import PriorityQueue
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def create_grid(data, drone_altitude, safety_distance):
@@ -26,6 +27,8 @@ def create_grid(data, drone_altitude, safety_distance):
     # Initialize an empty grid
     grid = np.zeros((north_size, east_size))
 
+    obstacles = []
+
     # Populate the grid with obstacles
     for i in range(data.shape[0]):
         north, east, alt, d_north, d_east, d_alt = data[i, :]
@@ -37,8 +40,9 @@ def create_grid(data, drone_altitude, safety_distance):
                 int(np.clip(east + d_east + safety_distance - east_min, 0, east_size-1)),
             ]
             grid[obstacle[0]:obstacle[1]+1, obstacle[2]:obstacle[3]+1] = 1
+            obstacles.append((obstacle, alt + d_alt + safety_distance))
 
-    return grid, int(north_min), int(east_min)
+    return grid, obstacles, int(north_min), int(east_min)
 
 
 # Assume all actions cost the same.
@@ -55,6 +59,10 @@ class Action(Enum):
     EAST = (0, 1, 1)
     NORTH = (-1, 0, 1)
     SOUTH = (1, 0, 1)
+    NORT_WEST = (-1, -1, np.sqrt(2))
+    NORTH_EAST = (-1, 1, np.sqrt(2))
+    SOUTH_EAST = (1, 1, np.sqrt(2))
+    SOUTH_WEST = (1, -1, np.sqrt(2))
 
     @property
     def cost(self):
@@ -84,7 +92,15 @@ def valid_actions(grid, current_node):
         valid_actions.remove(Action.WEST)
     if y + 1 > m or grid[x, y + 1] == 1:
         valid_actions.remove(Action.EAST)
-
+    if x - 1 < 0 or y - 1 < 0 or grid[x - 1, y - 1] == 1:
+        valid_actions.remove(Action.NORT_WEST)
+    if x - 1 < 0 or y + 1 < m or grid[x - 1, y + 1] == 1:
+        valid_actions.remove(Action.NORTH_EAST)
+    if x + 1 < n or y + 1 < m or grid[x + 1, y + 1] == 1:
+        valid_actions.remove(Action.SOUTH_EAST)
+    if x + 1 < n or y - 1 < 0 or grid[x + 1, y - 1] == 1:
+        valid_actions.remove(Action.SOUTH_WEST)
+    
     return valid_actions
 
 
@@ -144,3 +160,54 @@ def a_star(grid, h, start, goal):
 def heuristic(position, goal_position):
     return np.linalg.norm(np.array(position) - np.array(goal_position))
 
+
+def collinear(p1, p2, p3, epsilon=1e-2):
+    '''
+    Checks for collinearity (i.e. if there is no area between three points)
+    '''
+    collinear = False
+
+    mat = np.vstack((p1, p2, p3))   # Stack the three points
+    if(np.linalg.det(mat) < epsilon):
+        collinear = True
+
+    return collinear
+
+def point(p):
+    return np.array([p[0], p[1], 1.]).reshape(1, -1)
+
+def prune_path(path):
+    if path is not None:
+        pruned_path = [p for p in path]
+        i = 0
+        while i < len(pruned_path) - 2:
+            p1 = point(pruned_path[i])
+            p2 = point(pruned_path[i+1])
+            p3 = point(pruned_path[i+2])
+            
+            if collinear(p1, p2, p3):
+                pruned_path.remove(tuple(pruned_path[i+1]))
+                i += 1
+            else:
+                i += 1
+    else:
+        pruned_path = path
+
+    return pruned_path
+
+def draw_path(grid, path, start, goal):
+        '''
+        Draw the given path on the image
+        '''
+        plt.imshow(grid, cmap='Greys', origin='lower')
+
+        plt.plot(start[0], start[1], 'bx')
+        plt.plot(goal[0], goal[1], 'gx')
+        
+        # Draw the path towards the goal
+        for n1 in path:
+            plt.scatter(n1[0], n1[1], c='red')
+
+        plt.xlabel('NORTH')
+        plt.ylabel('EAST')
+        plt.show()
