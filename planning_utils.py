@@ -156,7 +156,6 @@ def a_star(grid, obstacles, h, start, goal):
     return path[::-1], path_cost
 
 
-
 def heuristic(position, goal_position):
     return np.linalg.norm(np.array(position) - np.array(goal_position))
 
@@ -199,16 +198,16 @@ def draw_path(grid, path, start, goal):
         '''
         Draw the given path on the image
         '''
-        fig, ax = plt.subplots()
+        plt.imshow(grid, cmap='Greys', origin='lower')
 
-        ax.imshow(grid, cmap='Greys', origin='lower')
-        ax.plot(start[0], start[1], 'bx')
-        ax.plot(goal[0], goal[1], 'gx')
-        
-        # Draw the path towards the goal
-        for n1 in path:
-            plt.scatter(n1[0], n1[1], c='red')
+        # For the purposes of the visual the east coordinate lay along
+        # the x-axis and the north coordinates long the y-axis.
+        plt.plot(start[1], start[0], 'x')
+        plt.plot(goal[1], goal[0], 'x')
 
-        plt.xlabel('NORTH')
-        plt.ylabel('EAST')
+        pp = np.array(path)
+        plt.plot(pp[:, 1], pp[:, 0], 'g')
+
+        plt.xlabel('EAST')
+        plt.ylabel('NORTH')
         plt.show()
