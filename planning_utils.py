@@ -94,17 +94,17 @@ def valid_actions(grid, current_node):
         valid_actions.remove(Action.EAST)
     if x - 1 < 0 or y - 1 < 0 or grid[x - 1, y - 1] == 1:
         valid_actions.remove(Action.NORT_WEST)
-    if x - 1 < 0 or y + 1 < m or grid[x - 1, y + 1] == 1:
+    if x - 1 < 0 or y + 1 > m or grid[x - 1, y + 1] == 1:
         valid_actions.remove(Action.NORTH_EAST)
-    if x + 1 < n or y + 1 < m or grid[x + 1, y + 1] == 1:
+    if x + 1 > n or y + 1 > m or grid[x + 1, y + 1] == 1:
         valid_actions.remove(Action.SOUTH_EAST)
-    if x + 1 < n or y - 1 < 0 or grid[x + 1, y - 1] == 1:
+    if x + 1 > n or y - 1 < 0 or grid[x + 1, y - 1] == 1:
         valid_actions.remove(Action.SOUTH_WEST)
     
     return valid_actions
 
 
-def a_star(grid, h, start, goal):
+def a_star(grid, obstacles, h, start, goal):
 
     path = []
     path_cost = 0
@@ -199,10 +199,11 @@ def draw_path(grid, path, start, goal):
         '''
         Draw the given path on the image
         '''
-        plt.imshow(grid, cmap='Greys', origin='lower')
+        fig, ax = plt.subplots()
 
-        plt.plot(start[0], start[1], 'bx')
-        plt.plot(goal[0], goal[1], 'gx')
+        ax.imshow(grid, cmap='Greys', origin='lower')
+        ax.plot(start[0], start[1], 'bx')
+        ax.plot(goal[0], goal[1], 'gx')
         
         # Draw the path towards the goal
         for n1 in path:

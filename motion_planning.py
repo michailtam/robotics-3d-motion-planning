@@ -130,13 +130,12 @@ class MotionPlanning(Drone):
         self.set_home_position(lon0, lat0, 0)   # Set the global home position
 
         # TODO: retrieve current global position
-        global_position = (self._longitude, self._latitude, self._altitude)
+        current_global_pos = (self._longitude, self._latitude, self._altitude)
         
         # TODO: convert to current local position using global_to_local()
-        local_position = global_to_local(global_position, self.global_home)
-
-        print('global home {0}, position {1}, local position {2}'.format(self.global_home, self.global_position,
-                                                                         self.local_position))
+        local_start = global_to_local(current_global_pos, self.global_home)
+        
+        print('global home {0}, position {1}, local position {2}'.format(self.global_home, current_global_pos, local_start))
         # Read in obstacle map
         data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
         
@@ -144,28 +143,24 @@ class MotionPlanning(Drone):
         grid, obstacles, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         # Define starting point on the grid (this is just grid center)
-    
         # TODO: convert start position to current position rather than map center
-        grid_start = (int(local_position[0]-north_offset), int(local_position[1]-east_offset))
+        grid_start = (int(local_start[0]-north_offset), int(local_start[1]-east_offset))
         
         # Set goal as some arbitrary position on the grid (find a position which is not occupied by an obstacle)
         #grid_goal = (-north_offset + 10, -east_offset + 10)
-        while True:
-            north_offset = np.random.randint(low=0, high=grid.shape[0])
-            east_offset = np.random.randint(low=0, high=grid.shape[1])
-            if grid[north_offset, east_offset] != 1.0:
-                break
-        grid_goal = (north_offset, east_offset)
-        local_position = (-north_offset, -east_offset, 0.0)
-        
+        global_goal = args.goal_global
+        lat1, lon1 = global_goal.split(',')
+        lat1, lon1 = float(lat1), float(lon1)
+        global_goal = (lon1, lat1, 0.0)
+        local_goal = global_to_local(global_goal, self.global_home)
+        grid_goal = (int(local_goal[0]-north_offset), int(local_goal[1]-east_offset))
+
         # TODO: adapt to set goal as latitude / longitude position and convert
-        lla = local_to_global(local_position, self.global_home)
-        (lon1, lat1, alt1) = lla[0], lla[1], lla[2]
         
         # Run A* to find a path from start to goal
         # TODO: add diagonal motions with a cost of sqrt(2) to your A* implementation
         # or move to a different search space such as a graph (not done here)
-        path, _ = a_star(grid, heuristic, grid_start, grid_goal)
+        path, _ = a_star(grid, obstacles, heuristic, grid_start, grid_goal)
         
         # TODO: prune path to minimize number of waypoints
         # TODO (if you're feeling ambitious): Try a different approach altogether!
@@ -202,16 +197,17 @@ class MotionPlanning(Drone):
 
 
 if __name__ == "__main__":
-    import os
     data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=5760, help='Port number')
     parser.add_argument('--host', type=str, default='127.0.0.1', help="host address, i.e. '127.0.0.1'")
+    # parser.add_argument('--startpos', type=float, help='The Geodetic start position')
+    parser.add_argument('--goal_global', type=str, default='37.795674,-122.400482', help='The Geodetic goal position')
     args = parser.parse_args()
 
     conn = MavlinkConnection('tcp:{0}:{1}'.format(args.host, args.port), timeout=60)
     drone = MotionPlanning(conn)
-    time.sleep(1)
+    time.sleep(1) # 37.793578,-122.392819
 
     drone.start()
