@@ -2,6 +2,7 @@ from enum import Enum
 from queue import PriorityQueue
 import numpy as np
 import matplotlib.pyplot as plt
+from bresenham import bresenham as bres
 
 
 def create_grid(data, drone_altitude, safety_distance):
@@ -83,7 +84,6 @@ def valid_actions(grid, current_node):
 
     # check if the node is off the grid or
     # it's an obstacle
-
     if x - 1 < 0 or grid[x - 1, y] == 1:
         valid_actions.remove(Action.NORTH)
     if x + 1 > n or grid[x + 1, y] == 1:
@@ -92,19 +92,19 @@ def valid_actions(grid, current_node):
         valid_actions.remove(Action.WEST)
     if y + 1 > m or grid[x, y + 1] == 1:
         valid_actions.remove(Action.EAST)
-    if x - 1 < 0 or y - 1 < 0 or grid[x - 1, y - 1] == 1:
+    if (x - 1 < 0 or y - 1 < 0) or grid[x - 1, y - 1] == 1:
         valid_actions.remove(Action.NORT_WEST)
-    if x - 1 < 0 or y + 1 > m or grid[x - 1, y + 1] == 1:
+    if (x - 1 < 0 or y + 1 > m) or grid[x - 1, y + 1] == 1:
         valid_actions.remove(Action.NORTH_EAST)
-    if x + 1 > n or y + 1 > m or grid[x + 1, y + 1] == 1:
+    if (x + 1 > n or y + 1 > m) or grid[x + 1, y + 1] == 1:
         valid_actions.remove(Action.SOUTH_EAST)
-    if x + 1 > n or y - 1 < 0 or grid[x + 1, y - 1] == 1:
+    if (x + 1 > n or y - 1 < 0) or grid[x + 1, y - 1] == 1:
         valid_actions.remove(Action.SOUTH_WEST)
     
     return valid_actions
 
 
-def a_star(grid, obstacles, h, start, goal):
+def a_star(grid, h, start, goal):
 
     path = []
     path_cost = 0
@@ -175,24 +175,44 @@ def collinear(p1, p2, p3, epsilon=1e-2):
 def point(p):
     return np.array([p[0], p[1], 1.]).reshape(1, -1)
 
-def prune_path(path):
-    if path is not None:
+def prune_path(path, grid):
+
+        def collinear_check(p1, p2, p3, epsilon=1e-2):
+            '''
+            Checks for collinearity (i.e. if there is no area between three points)
+            PARAMS
+            - p1, p2, p3: 2D coords to check for
+            - epsilon: The maximum value of the determinant to be collinear
+            RETURN
+            - True, if the three points are collinear, False otherwise
+            '''
+            det = p1[0]*(p2[1] - p3[1]) + p2[0]*(p3[1] - p1[1]) + p3[0]*(p1[1] - p2[1])
+            if abs(det) < epsilon:
+                return True
+            return False
+
         pruned_path = [p for p in path]
         i = 0
         while i < len(pruned_path) - 2:
-            p1 = point(pruned_path[i])
-            p2 = point(pruned_path[i+1])
-            p3 = point(pruned_path[i+2])
+            p1 = pruned_path[i]
+            p2 = pruned_path[i+1]
+            p3 = pruned_path[i+2]
             
-            if collinear(p1, p2, p3):
-                pruned_path.remove(tuple(pruned_path[i+1]))
-                i += 1
+            # Checks for collinearity
+            if collinear_check(p1, p2, p3):
+                pruned_path.remove(p2)
             else:
-                i += 1
-    else:
-        pruned_path = path
-
-    return pruned_path
+                # Does low computational ray tracing calculation and prunes if necessary
+                can_connect = True
+                for ray in bres(p1[0], p1[1], p3[0], p3[1]):
+                    if grid[ray[0], ray[1]] != 0:
+                        can_connect = False
+                        break
+                if can_connect:
+                    pruned_path.remove(p2)
+                else:
+                    i += 1
+        return pruned_path 
 
 def draw_path(grid, path, start, goal):
         '''
@@ -200,8 +220,6 @@ def draw_path(grid, path, start, goal):
         '''
         plt.imshow(grid, cmap='Greys', origin='lower')
 
-        # For the purposes of the visual the east coordinate lay along
-        # the x-axis and the north coordinates long the y-axis.
         plt.plot(start[1], start[0], 'x')
         plt.plot(goal[1], goal[0], 'x')
 
@@ -210,4 +228,5 @@ def draw_path(grid, path, start, goal):
 
         plt.xlabel('EAST')
         plt.ylabel('NORTH')
+
         plt.show()
