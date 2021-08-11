@@ -17,7 +17,7 @@ The methods and functions that are used are:
 2. The global home and current global positions are initialized. The home position gets read from the
 **colliders.csv** file, whereas the current global position gets determined reading the current
 longitude and latitude coordinates.
-```
+```python
 with open('colliders.csv', newline='') as f:
             reader = csv.reader(f)
             row1 = next(reader)  # Reads the global home location (first line only)
