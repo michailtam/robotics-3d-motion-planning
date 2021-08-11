@@ -87,15 +87,10 @@ zero. The start position gets also added to the visited set.
     point 3 (i.e. there is no obstacle between). If this is the case, the point 2 gets removed.
 
 
-### 2. Implementing Your Path Planning Algorithm
-
-
-### 3. Executing the flight
-
-
-
-
-
-
-We've provided you with a functional yet super basic path planning implementation and in this step, your task is to explain how it works! Have a look at the code, particularly in the plan_path() method and functions provided in planning_utils.py and describe what's going on there. This need not be a lengthy essay, just a concise description of the functionality of the starter code.
-
+### 2. Executing the flight
+| **San Francisco - Satelite** |
+| :--- |
+| <img src="https://github.com/michailtam/3d-motion-planning/tree/master/misc/map.png" alt="San Francisco Map - Satelite" width="560" height="300" border="0" /> |
+| **San Francisco - 3D** |
+| :--- |
+| <img src="https://github.com/michailtam/3d-motion-planning/tree/master/misc/high_up.png" alt="San Francisco Map - 3D" width="560" height="300" border="0" /> |
