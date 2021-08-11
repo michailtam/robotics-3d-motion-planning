@@ -22,16 +22,28 @@ with open('colliders.csv', newline='') as f:
             reader = csv.reader(f)
             row1 = next(reader)  # Reads the global home location (first line only)
         lon0, lat0 = float(row1[1].split()[1]), float(row1[0].split()[1])
+
+        # Set the home position to (lon0, lat0, 0)
+        self.set_home_position(lon0, lat0, 0)   # Set the global home position
+
+        # Retrieve the current global position
+        current_global_pos = (self._longitude, self._latitude, self._altitude)
 ```
 
 3. The current global position gets converted by the **global_to_local** method to the local position, which
 are the coordinates north, east and down relative to the home position.
+```python
+local_start = global_to_local(current_global_pos, self.global_home)
+```
 
 4. Using the collider data from the colliders.csv file, the target altitude and the safety distance 
 a grid gets created which contains the obstacles. This process is described in detail below.
 
 5. Based on north_offset and east_offset, the start position on the grid gets calculated. This gets
 done by subtracting the offsets from the local position.
+```python
+grid_start = (int(local_start[0]-north_offset), int(local_start[1]-east_offset))
+```
 
 6. The global goal position gets provided by the command line using the ArgumentParser class. The process
 to convert the global goal position to the local goal position is the same as shown in **step 3**.
@@ -42,13 +54,27 @@ to convert the global goal position to the local goal position is the same as sh
 the path from start to goal on the grid gets calculated using the **A* algorithm**. The heuristic function 
 which gets used is the euclidean distance and the calculation gets executed in the a_star function.
 The process of calculating the path is described in detail below.
+```python
+path, _ = a_star(grid, heuristic, grid_start, grid_goal)
+```
 
 9. To reduce the calculations and the number of nodes on the path, pruning gets applied which discards
 unnecessary nodes. The process of how pruning on the path gets achieved, is described in detail below.
+```python
+pruned_path = prune_path(path, grid)
+```
 
 10. At the end the way points the Drone has to fly are calculated by subtracting the north and east offsets
 from the remaining nodes. After that, all the **waypoints** are send to the **simulator**.
-
+```python
+if len(pruned_path) == 0:
+            print("[WARNING] No path calculated!!!")
+else:
+    self.waypoints = waypoints
+    
+    # Sends the waypoints to the simulator (this is just for visualization of waypoints)
+    self.send_waypoints()
+```
 
 ### planning_utils.py - create_grid()
 1. Based on the data from the colliders.csv file the minimum, maximum and the size of the north and east 
@@ -59,9 +85,8 @@ based on the colliders.csv data. Before each obstacle gets created, the height o
 safety distance is bigger than the altitude of the drone. This ensures that there is no building that
 smaller than the flight altitude of the drone.
 
-
 ### planning_utils.py - a_star()
-1. Tha method takes as parameters the created grid, the heuristic function, the start and end position on the
+1. The method takes as parameters the created grid, the heuristic function, the start and end position on the
 grid. The algorithm uses a [Priority queue](https://en.wikipedia.org/wiki/Priority_queue) to determine that
 only short path distances are getting checked. The queue gets initialized with the start position and a cost of
 zero. The start position gets also added to the visited set.
@@ -89,9 +114,26 @@ zero. The start position gets also added to the visited set.
   - The three next points are read from the list
   - A **collinear check** gets executed to determine if the three points lie on the same line. If this is
     the case, the middle node gets removed.
+```python
+det = p1[0]*(p2[1] - p3[1]) + p2[0]*(p3[1] - p1[1]) + p3[0]*(p1[1] - p2[1])
+if abs(det) < epsilon:
+    return True
+return False
+
+```
   - In the other case, the **Bresenham's line algorithm** gets applied to determine if point 1 can be connected to
     point 3 (i.e. there is no obstacle between). If this is the case, the point 2 gets removed.
-
+```python
+can_connect = True
+for ray in bres(p1[0], p1[1], p3[0], p3[1]):
+    if grid[ray[0], ray[1]] != 0:
+        can_connect = False
+        break
+if can_connect:
+    pruned_path.remove(p2)
+else:
+    i += 1
+```
 
 ## 2. Executing the flight
 | **San Francisco - Satelite** |
