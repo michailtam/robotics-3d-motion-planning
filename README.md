@@ -98,15 +98,39 @@ zero. The start position gets also added to the visited set.
     - For each action the following steps are executed:
       - The next node gets determined
       - The queue cost gets calculated by the branch cost + the heuristic cost (F = G + H)
+```python
+for action in valid_actions(grid, current_node):
+    # get the tuple representation
+    da = action.delta
+    next_node = (current_node[0] + da[0], current_node[1] + da[1])
+    branch_cost = current_cost + action.cost
+    queue_cost = branch_cost + h(next_node, goal)
+```
     - If the next node is not in the visited list, the node gets added to it and also to the
       branch dictionary and to the queue. The branch and the queue cost get added to the respective
       data structure
+```python
+if next_node not in visited:                
+    visited.add(next_node)               
+    branch[next_node] = (branch_cost, current_node, action)
+    queue.put((queue_cost, next_node))
+```
 
 3. When a path gets found, the following steps follow:
     - The overall path cost and the goal get saved
     - Each node of the calculated path will be added to the path list
+```python
+if found:
+    # retrace steps
+    n = goal
+    path_cost = branch[n][0]
+    path.append(goal)
+    while branch[n][1] != start:
+        path.append(branch[n][1])
+        n = branch[n][1]
+    path.append(branch[n][1])
+```
     
-
 ### planning_utils.py - prune_path()
 1. The method takes as parameters the calculated path list and the grid
 
