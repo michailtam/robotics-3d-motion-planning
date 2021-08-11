@@ -28,8 +28,6 @@ def create_grid(data, drone_altitude, safety_distance):
     # Initialize an empty grid
     grid = np.zeros((north_size, east_size))
 
-    obstacles = []
-
     # Populate the grid with obstacles
     for i in range(data.shape[0]):
         north, east, alt, d_north, d_east, d_alt = data[i, :]
@@ -41,9 +39,8 @@ def create_grid(data, drone_altitude, safety_distance):
                 int(np.clip(east + d_east + safety_distance - east_min, 0, east_size-1)),
             ]
             grid[obstacle[0]:obstacle[1]+1, obstacle[2]:obstacle[3]+1] = 1
-            obstacles.append((obstacle, alt + d_alt + safety_distance))
-
-    return grid, obstacles, int(north_min), int(east_min)
+            
+    return grid, int(north_min), int(east_min)
 
 
 # Assume all actions cost the same.

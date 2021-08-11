@@ -143,7 +143,7 @@ class MotionPlanning(Drone):
         print('[INFO] Collider data loaded.')
         
         # Define a grid for a particular altitude and safety margin around obstacles
-        grid, _, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+        grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         print("[INFO] North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         # Define starting point on the grid (this is just grid center)
         # TODO: convert start position to current position rather than map center
@@ -182,9 +182,6 @@ class MotionPlanning(Drone):
         if len(pruned_path) == 0:
             print("[WARNING] No path calculated!!!")
         else:
-            # Calculates random heights (from 5m - 10m) for each waypoint
-            for i in range(0, len(waypoints)):
-                waypoints[i][2] = random.randint(5, 10)   
             self.waypoints = waypoints
             
             # TODO: send waypoints to sim (this is just for visualization of waypoints)

@@ -2,14 +2,7 @@
 ![Quad Image](./misc/enroute.png)
 
 ## Description
-In this project a Drone flies a path in the 3D San Francisco urban, which gets calculated
-using the A* path planning algorithm. The way points the Drone flies gets reflected by
-nodes which are getting calculated by the algorithm. To reduce the computation and the
-nodes, the path gets pruned applying collinear check and the Bresenham algorithm. 
-The first one checks if there are three successive nodes that lie on the same line and 
-the second one calculates computational friendly (does not multiplication and divisions) 
-a ray from point 1 to point 2. This ensures that unnecessary nodes get discarted and paths 
-that traverse obstacles are not taken into account.
+In this project a Drone flies a path in the [FCND-Simulator](https://github.com/udacity/FCND-Simulator-Releases/releases) which was created by Udacity for the [Flying Car and Autonomous Flight Engineer](https://www.udacity.com/course/flying-car-nanodegree--nd787) Nano degree program. The simulator shows a 3D environment of the San Francisco urban and can be used to execute different operations like 3D motion planning. The path gets calculated using the [A* path planning algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm). The way points the Drone flies gets reflected by nodes which are getting calculated by this algorithm. To reduce the computation and the nodes, the path gets pruned applying [collinear](https://en.wikipedia.org/wiki/Collinearity) check and the [Bresenham line](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm) algorithm. The first one calculates using Linear Algebra if there are three successive nodes that lie on the same line (i.e. if the determinant is 0) and the second one calculates computational friendly (does not multiplication and divisions) a ray from one point to another. Both algorithms ensure that unnecessary nodes get discarted and paths that traverse obstacles are not taken into account.
 
 ## Rubric points
 
@@ -22,13 +15,13 @@ The methods and functions that are used are:
 1. The target altitude and the safety distance get set to 5 meters. 
 
 2. The global home and current global positions are determined. The home position gets read from the
-collision.csv file, whereas the current global position gets determined reading the current
+colliders.csv file, whereas the current global position gets determined reading the current
 longitude and latitude coordinates. 
 
 3. The current global position gets converted by the global_to_local method to the local position, which
 are the coordinates north, east and down relative to the home position.
 
-4. Using the collision data from the collision.csv file, the target altitude and the safety distance 
+4. Using the collider data from the colliders.csv file, the target altitude and the safety distance 
 a grid gets created which contains the obstacles. This process is described in detail below.
 
 5. Based on north_offset and east_offset, the start position on the grid gets calculated. This gets
@@ -42,18 +35,56 @@ to convert the global goal position to the local goal position is the same as sh
 8. Using the created grid, the grid_start position, the grid_goal position and a heuristic function,
 the path from start to goal on the grid gets calculated using the A* algorithm. The heuristic function 
 which gets used is the euclidean distance and the calculation gets executed in the a_star function.
-This process of calculating the path is described in detail below.
+The process of calculating the path is described in detail below.
 
 9. To reduce the calculations and the number of nodes on the path, pruning gets applied which discards
-unnecessary nodes. 
+unnecessary nodes. The process of how pruning on the path gets achieved, is described in detail below.
+
+10. At the end the way points the Drone has to fly are calculated by subtracting the north and east offsets
+from the remaining nodes. After that, all the waypoints are send to the simulator.
 
 
 ### planning_utils.py - create_grid()
-1. 
+1. Based on the data from the colliders.csv file the minimum, maximum and the size of the north and east 
+coordinates get calculated.
+
+2. A grid containing only zeros (white color) gets created and populated with obstacles which are calculated
+based on the colliders.csv data. Before each obstacle gets created, the height of the building plus the
+safety distance is bigger than the altitude of the drone. This ensures that there is no building that
+smaller than the flight altitude of the drone.
 
 
 ### planning_utils.py - a_star()
-1. 
+1. Tha method takes as parameters the created grid, the heuristic function, the start and end position on the
+grid. The algorithm uses a [Priority queue](https://en.wikipedia.org/wiki/Priority_queue) to determine that
+only short path distances are getting checked. The queue gets initialized with the start position and a cost of
+zero. The start position gets also added to the visited set.
+
+2. Now the below steps are executed until the queue is empty:
+    - The item of the queue gets read
+    - If the current node is not the start node then the current branch cost is set to zero
+    - A path gets found if the current node is equal to the goal node
+    - For each action the following steps are executed:
+      - The next node gets determined
+      - The queue cost gets calculated by the branch cost + the heuristic cost (F = G + H)
+    - If the next node is not in the visited list, the node gets added to it and also to the
+      branch dictionary and to the queue. The branch and the queue cost get added to the respective
+      data structure
+
+3. When a path gets found, the following steps follow:
+    - The overall path cost and the goal get saved
+    - Each node of the calculated path will be added to the path list
+    
+
+### planning_utils.py - prune_path()
+1. The method takes as parameters the calculated path list and the grid
+
+2. Now the below steps are executed until the index reaches two nodes before the length of the list:
+  - The three next points are read from the list
+  - A collinear check gets executed to determine if the three points lie on the same line. If this is
+    the case, the middle node gets removed.
+  - In the other case, the Bresenham algorithm gets applied to determine if point 1 can be connected to
+    point 3 (i.e. there is no obstacle between). If this is the case, the point 2 gets removed.
 
 
 ### 2. Implementing Your Path Planning Algorithm
