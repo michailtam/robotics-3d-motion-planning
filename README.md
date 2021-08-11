@@ -95,3 +95,8 @@ zero. The start position gets also added to the visited set.
 | <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/high_up.png" alt="San Francisco Map - 3D" width="800" height="600" border="0" /> |
 
 
+| **Path - Corner** |
+| :---------------------------- |
+| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/corner.png" alt="Corner" width="800" height="600" border="0" /> |
+| **Path - Towards the goal** |
+| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/towards_goal.png" alt="Towards the goal" width="800" height="600" border="0" /> |
