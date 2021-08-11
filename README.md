@@ -105,4 +105,4 @@ zero. The start position gets also added to the visited set.
 
 #### 3. Video
 <a href="https://www.youtube.com/watch?v=CxTT9g_G1x8" target="_blank">
-<img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/flying_path.png" alt="3D Motion Planning" width="600" height="400" border="0" />
+<img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/flying_path.png" alt="3D Motion Planning" width="700" height="500" border="1" />
