@@ -97,6 +97,8 @@ zero. The start position gets also added to the visited set.
 
 | **Path - Corner** |
 | :---------------------------- |
-| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/corner.png" alt="Corner" width="800" height="600" border="0" /> |
+| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/corner.png" alt="Corner" width="700" height="500" border="0" /> |
 | **Path - Towards the goal** |
-| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/towards_goal.png" alt="Towards the goal" width="800" height="600" border="0" /> |
+| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/towards_goal.png" alt="Towards the goal" width="700" height="500" border="0" /> |
+| **Flight path** |
+| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/flying_path.png" alt="Flight path" width="700" height="500" border="0" /> |
