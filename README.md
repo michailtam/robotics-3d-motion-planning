@@ -90,8 +90,8 @@ zero. The start position gets also added to the visited set.
 ### 2. Executing the flight
 | **San Francisco - Satelite** |
 | :---------------------------- |
-| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/map.png" alt="San Francisco Map - Satelite" width='80%' border="0" /> |
+| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/map.png" alt="San Francisco Map - Satelite" width='80%' height='80% border="0" /> |
 | **San Francisco - 3D** |
-| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/high_up.png" alt="San Francisco Map - 3D" border="0" /> |
+| <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/high_up.png" alt="San Francisco Map - 3D" width='80%' height='80% border="0" /> |
 
 
