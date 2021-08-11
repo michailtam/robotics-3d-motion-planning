@@ -6,7 +6,7 @@ In this project a Drone flies a path in the [FCND-Simulator](https://github.com/
 
 ## Rubric points
 
-### 1. Code explanation
+## 1. Code explanation
 The main part in this project is the 3D motion which gets handled in the motion_planning.py 
 and the planning_utils.py files. Especially, the plan_path method is of particular importance.
 The methods and functions that are used are:
@@ -87,7 +87,7 @@ zero. The start position gets also added to the visited set.
     point 3 (i.e. there is no obstacle between). If this is the case, the point 2 gets removed.
 
 
-### 2. Executing the flight
+## 2. Executing the flight
 | **San Francisco - Satelite** |
 | :---------------------------- |
 | <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/map.png" alt="San Francisco Map - Satelite" width="700" height="500" border="0" /> |
@@ -103,6 +103,6 @@ zero. The start position gets also added to the visited set.
 | **Flight path** |
 | <img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/flying_path.png" alt="Flight path" width="700" height="500" border="0" /> |
 
-#### 3. Video
+## 3. Video
 <a href="https://www.youtube.com/watch?v=CxTT9g_G1x8" target="_blank">
-<img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/flying_path.png" alt="3D Motion Planning" width="700" height="500" border="1" />
+<img src="https://github.com/michailtam/3d-motion-planning/blob/master/misc/flying_path.png" alt="3D Motion Planning" width="700" height="500" border="0" />
