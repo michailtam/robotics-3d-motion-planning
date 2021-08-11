@@ -202,13 +202,13 @@ class MotionPlanning(Drone):
 
 if __name__ == "__main__":
 
-    import os
-    os.chdir('FCND-Motion-Planning')
+    # import os
+    # os.chdir('FCND-Motion-Planning')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=5760, help='Port number')
     parser.add_argument('--host', type=str, default='127.0.0.1', help="host address, i.e. '127.0.0.1'")
-    parser.add_argument('--goal_global', type=str, default='37.79368639153042, -122.39903572892969', help='The Geodetic goal position')
+    parser.add_argument('--goal_global', type=str, default='37.79362599197414, -122.39941897349433', help='The Geodetic goal position')
     args = parser.parse_args()
 
     # NOTE: Time out was changed from 600 to bypass the connection lost problem to the drone
@@ -217,5 +217,3 @@ if __name__ == "__main__":
     time.sleep(1)
 
     drone.start()
-
-    
