@@ -6,7 +6,7 @@ In this project a Drone flies a path in the [FCND-Simulator](https://github.com/
 
 ## Rubric points
 
-### 1. Explain the Starter Code
+### 1. Code explanation
 The main part in this project is the 3D motion which gets handled in the motion_planning.py 
 and the planning_utils.py files. Especially, the plan_path method is of particular importance.
 The methods and functions that are used are:
