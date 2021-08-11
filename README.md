@@ -19,15 +19,15 @@ The methods and functions that are used are:
 longitude and latitude coordinates.
 ```python
 with open('colliders.csv', newline='') as f:
-            reader = csv.reader(f)
-            row1 = next(reader)  # Reads the global home location (first line only)
-        lon0, lat0 = float(row1[1].split()[1]), float(row1[0].split()[1])
+    reader = csv.reader(f)
+    row1 = next(reader)  # Reads the global home location (first line only)
+lon0, lat0 = float(row1[1].split()[1]), float(row1[0].split()[1])
 
-        # Set the home position to (lon0, lat0, 0)
-        self.set_home_position(lon0, lat0, 0)   # Set the global home position
+# Set the home position to (lon0, lat0, 0)
+self.set_home_position(lon0, lat0, 0)   # Set the global home position
 
-        # Retrieve the current global position
-        current_global_pos = (self._longitude, self._latitude, self._altitude)
+# Retrieve the current global position
+current_global_pos = (self._longitude, self._latitude, self._altitude)
 ```
 
 3. The current global position gets converted by the **global_to_local** method to the local position, which
